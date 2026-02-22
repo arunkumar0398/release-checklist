@@ -1,6 +1,7 @@
 import { Release } from "./types";
 
-const BASE = "/api/releases";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? "";
+const BASE = `${BACKEND_URL}/api/releases`;
 
 export async function fetchReleases(): Promise<Release[]> {
   const res = await fetch(BASE);
