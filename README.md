@@ -165,9 +165,33 @@ Base URL: `/api`
 
 ## Deployment
 
-You can deploy frontend and backend independently:
+### Frontend — Vercel
 
-- **Frontend** (static): Vercel, Netlify, Cloudflare Pages — point to `frontend/` and set build command `npm run build`, output dir `dist`.
-- **Backend** (Node): Render, Railway, Fly.io — set `DATABASE_URL` env var pointing to a hosted PostgreSQL instance (e.g. Supabase, Neon, Railway Postgres).
+1. Go to [vercel.com](https://vercel.com) and import this repository.
+2. In the project settings, set **Root Directory** to `frontend`.
+3. Vercel will auto-detect Vite. The `frontend/vercel.json` configures:
+   - Build command: `npm run build`
+   - Output directory: `dist`
+   - SPA rewrites (all routes → `index.html`)
+   - Long-term cache headers for hashed assets
+4. Add the following **Environment Variable** in the Vercel dashboard:
 
-Set `VITE_API_BASE` or configure your CDN/proxy to forward `/api/*` to the backend URL.
+   | Name               | Value                              |
+   |--------------------|------------------------------------|
+   | `VITE_BACKEND_URL` | `https://your-backend-domain.com`  |
+
+5. Deploy. Every push to `main` will trigger an automatic redeploy.
+
+> **Note:** The `VITE_BACKEND_URL` variable is baked in at build time by Vite.
+> Leave it empty (or unset) if the frontend and backend are served from the same origin.
+
+### Backend — Railway / Render / Fly.io
+
+- **Runtime:** Node.js 20+
+- **Start command:** `npm start` (runs compiled `dist/index.js`)
+- **Required env vars:**
+
+  | Name           | Description                                      |
+  |----------------|--------------------------------------------------|
+  | `DATABASE_URL` | PostgreSQL connection string (e.g. Neon, Supabase, Railway Postgres) |
+  | `PORT`         | Port to listen on (defaults to `3001`)           |
